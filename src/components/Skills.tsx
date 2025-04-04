@@ -1,134 +1,138 @@
 
-import { skills } from "@/lib/data";
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { useEffect, useRef, useState } from "react";
+import { Skill } from "@/lib/types";
 
-const SkillCategory = ({ title, skills, color }: { 
-  title: string; 
-  skills: { name: string; level: number }[];
-  color: string;
-}) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const catRef = useRef<HTMLDivElement>(null);
+// Make sure all skills have a level property
+const formatSkills = (skills: Skill[]): Array<{ name: string; level: number }> => {
+  return skills.map(skill => ({
+    name: skill.name,
+    level: skill.level || 5 // Default to 5 if level is not defined
+  }));
+};
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (catRef.current) {
-      observer.observe(catRef.current);
-    }
-
-    return () => {
-      if (catRef.current) {
-        observer.unobserve(catRef.current);
-      }
-    };
-  }, []);
-
+const SkillBar = ({ name, level }: { name: string; level: number }) => {
   return (
-    <div 
-      ref={catRef}
-      className={cn(
-        "transition-all duration-700 transform",
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-      )}
-    >
-      <h4 className="text-lg font-semibold mb-4">{title}</h4>
-      <div className="space-y-4">
-        {skills.map((skill, idx) => (
-          <div key={idx} className="space-y-1">
-            <div className="flex justify-between text-sm">
-              <span>{skill.name}</span>
-              <span className="text-foreground/60">{skill.level * 10}%</span>
-            </div>
-            <div className="h-2 bg-foreground/10 rounded-full overflow-hidden">
-              <div 
-                className={cn("h-full rounded-full transition-all duration-1000", color)}
-                style={{ 
-                  width: isVisible ? `${skill.level * 10}%` : "0%",
-                  transitionDelay: `${idx * 100}ms`
-                }}
-              />
-            </div>
-          </div>
-        ))}
+    <div className="mb-4">
+      <div className="flex justify-between mb-1">
+        <span className="text-sm font-medium dark:text-white">{name}</span>
+        <span className="text-xs font-medium text-muted-foreground dark:text-white/70">
+          {level}/10
+        </span>
+      </div>
+      <div className="w-full h-2 bg-muted rounded-full overflow-hidden dark:bg-zinc-800">
+        <div
+          className="h-full bg-gradient-to-r from-primary to-accent rounded-full"
+          style={{ width: `${(level / 10) * 100}%` }}
+        />
       </div>
     </div>
   );
 };
 
+const SkillGrid = ({ skills }: { skills: Array<{ name: string; level: number }> }) => {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      {skills.map((skill) => (
+        <SkillBar key={skill.name} name={skill.name} level={skill.level} />
+      ))}
+    </div>
+  );
+};
+
 const Skills = () => {
-  const frontendSkills = skills.filter(s => s.category === "frontend");
-  const backendSkills = skills.filter(s => s.category === "backend");
-  const toolsSkills = skills.filter(s => s.category === "tools");
-  const otherSkills = skills.filter(s => s.category === "hardware" || s.category === "other" || s.category === "testing");
+  const [activeTab, setActiveTab] = useState("all");
+
+  // Skill categories
+  const frontendSkills: Skill[] = [
+    { name: "HTML", level: 9 },
+    { name: "CSS", level: 8 },
+    { name: "JavaScript", level: 8 },
+    { name: "AngularJS", level: 7 },
+    { name: "React", level: 6 },
+  ];
+
+  const backendSkills: Skill[] = [
+    { name: "Node.js", level: 7 },
+    { name: "Python", level: 7 },
+    { name: "C#", level: 6 },
+    { name: "MySQL", level: 7 },
+    { name: "Git", level: 8 },
+    { name: "Microsoft Azure", level: 6 },
+  ];
+
+  const testingSkills: Skill[] = [
+    { name: "Test Plan Creation", level: 9 },
+    { name: "Manual Testing", level: 9 },
+    { name: "Software Troubleshooting", level: 8 },
+  ];
+
+  const hardwareSkills: Skill[] = [
+    { name: "AutoCAD", level: 8 },
+    { name: "PC Assembly", level: 8 },
+    { name: "Hardware Troubleshooting", level: 7 },
+    { name: "Circuit Design", level: 6 },
+    { name: "Soldering", level: 7 },
+  ];
+
+  // All skills combined
+  const allSkills = [
+    ...frontendSkills,
+    ...backendSkills,
+    ...testingSkills,
+    ...hardwareSkills,
+  ];
 
   return (
-    <section id="skills" className="py-20 relative overflow-hidden bg-foreground/[0.02]">
-      {/* Background circuit pattern */}
-      <div className="absolute inset-0 circuit-pattern opacity-10"></div>
-      
-      {/* Background gradients */}
-      <div className="absolute -right-40 bottom-20 w-80 h-80 bg-secondary/10 rounded-full blur-3xl"></div>
-      <div className="absolute -left-20 top-10 w-60 h-60 bg-accent/10 rounded-full blur-3xl"></div>
-      
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-16">
-          <h2 className="inline-block text-sm font-semibold text-primary px-3 py-1 rounded-full bg-primary/10 mb-3">
-            TECHNICAL EXPERTISE
-          </h2>
-          <h3 className="text-3xl md:text-4xl font-bold mb-4">
-            My <span className="text-gradient">Skills</span>
-          </h3>
-          <p className="text-foreground/70 max-w-2xl mx-auto">
-            A comprehensive overview of my technical capabilities spanning frontend development, backend technologies, testing methodologies, and hardware expertise.
+    <section id="skills" className="py-20 dark:bg-zinc-950">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold mb-2 text-gradient">Skills & Expertise</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto dark:text-white/70">
+            Technical skills and proficiencies gained through education and professional experience
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-x-12 gap-y-16">
-          <SkillCategory 
-            title="Frontend Development" 
-            skills={frontendSkills} 
-            color="bg-gradient-to-r from-primary to-secondary"
-          />
-          
-          <SkillCategory 
-            title="Backend Technologies" 
-            skills={backendSkills} 
-            color="bg-gradient-to-r from-secondary to-accent"
-          />
-          
-          <SkillCategory 
-            title="Tools & Platforms" 
-            skills={toolsSkills} 
-            color="bg-gradient-to-r from-accent to-primary"
-          />
-          
-          <SkillCategory 
-            title="Testing & Hardware" 
-            skills={otherSkills} 
-            color="bg-gradient-to-r from-secondary/90 to-primary/90"
-          />
-        </div>
+        <div className="max-w-4xl mx-auto">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid grid-cols-2 md:grid-cols-5 mb-8">
+              <TabsTrigger value="all" className="dark:text-white dark:data-[state=active]:bg-primary/20">All</TabsTrigger>
+              <TabsTrigger value="frontend" className="dark:text-white dark:data-[state=active]:bg-primary/20">Frontend</TabsTrigger>
+              <TabsTrigger value="backend" className="dark:text-white dark:data-[state=active]:bg-primary/20">Backend</TabsTrigger>
+              <TabsTrigger value="testing" className="dark:text-white dark:data-[state=active]:bg-primary/20">Testing</TabsTrigger>
+              <TabsTrigger value="hardware" className="dark:text-white dark:data-[state=active]:bg-primary/20">Hardware</TabsTrigger>
+            </TabsList>
 
-        {/* Floating skill chips */}
-        <div className="mt-20 flex flex-wrap justify-center gap-3">
-          {skills.map((skill, idx) => (
-            <div 
-              key={idx}
-              className="tech-chip animate-float"
-              style={{ animationDelay: `${idx * 0.2}s` }}
-            >
-              {skill.name}
+            <div className="mt-6">
+              <TabsContent value="all">
+                <SkillGrid skills={formatSkills(allSkills)} />
+              </TabsContent>
+              
+              <TabsContent value="frontend">
+                <SkillGrid skills={formatSkills(frontendSkills)} />
+              </TabsContent>
+              
+              <TabsContent value="backend">
+                <SkillGrid skills={formatSkills(backendSkills)} />
+              </TabsContent>
+              
+              <TabsContent value="testing">
+                <SkillGrid skills={formatSkills(testingSkills)} />
+              </TabsContent>
+              
+              <TabsContent value="hardware">
+                <SkillGrid skills={formatSkills(hardwareSkills)} />
+              </TabsContent>
             </div>
-          ))}
+          </Tabs>
         </div>
       </div>
     </section>

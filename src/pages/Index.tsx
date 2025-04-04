@@ -6,6 +6,7 @@ import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
 import Projects from "@/components/Projects";
 import Skills from "@/components/Skills";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { useEffect } from "react";
 
 const Index = () => {
@@ -15,17 +16,19 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main>
-        <Hero />
-        <Experience />
-        <Skills />
-        <Projects />
-        <Contact />
-      </main>
-      <Footer />
-    </div>
+    <ThemeProvider defaultTheme="system" storageKey="portfolio-theme">
+      <div className="min-h-screen flex flex-col dark:bg-zinc-900 transition-colors duration-300">
+        <Navbar />
+        <main>
+          <Hero />
+          <Experience />
+          <Skills />
+          <Projects />
+          <Contact />
+        </main>
+        <Footer />
+      </div>
+    </ThemeProvider>
   );
 };
 

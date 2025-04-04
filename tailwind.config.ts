@@ -163,7 +163,15 @@ export default {
 					'50%': {
 						borderColor: 'hsl(var(--primary))'
 					}
-				}
+				},
+				'shimmer': {
+					'0%': {
+						backgroundPosition: '-40rem 0',
+					},
+					'100%': {
+						backgroundPosition: '40rem 0',
+					},
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -176,7 +184,8 @@ export default {
 				'float': 'float 3s ease-in-out infinite',
 				'pulse-slow': 'pulse 3s ease-in-out infinite',
 				'typing': 'typing 3.5s steps(40, end)',
-				'blink-caret': 'blink-caret 0.75s step-end infinite'
+				'blink-caret': 'blink-caret 0.75s step-end infinite',
+				'shimmer': 'shimmer 2s linear infinite',
 			},
 			fontFamily: {
 				'sans': ['Inter', 'sans-serif'],
@@ -186,6 +195,7 @@ export default {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
 				'grid-pattern': 'linear-gradient(to right, rgba(75, 85, 99, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(75, 85, 99, 0.1) 1px, transparent 1px)',
 				'tech-circuit': 'url("data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M20 13 L20 87 M80 13 L80 87 M12 20 L88 20 M12 80 L88 80 M25 35 L35 35 L35 25 M65 35 L75 35 L75 25 M25 65 L35 65 L35 75 M65 65 L75 65 L75 75\' stroke=\'rgba(64, 76, 103, 0.2)\' fill=\'none\' stroke-width=\'1\'/%3E%3C/svg%3E")',
+				'shimmer': 'linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent)',
 			}
 		}
 	},
